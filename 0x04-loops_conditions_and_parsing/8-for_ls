@@ -2,4 +2,6 @@
 # Bash script that displays the content of the current directory in a list format
 # where only the part of the name after the first dash is displayed (for loop)
 
-ls | cut -d '-' -f 2-
+for i in $(ls); do
+  echo "$i" | cut -d '-' -f 2-
+done
