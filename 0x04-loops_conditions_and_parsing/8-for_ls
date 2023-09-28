@@ -3,5 +3,5 @@
 # where only the part of the name after the first dash is displayed (for loop)
 
 for i in $(ls); do
-  echo "$i" | cut -d '-' -f 2-
+  echo "$i" | cut -d '-' -f2
 done
