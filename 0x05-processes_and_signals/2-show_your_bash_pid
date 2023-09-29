@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Bash Script that displays a list of currently running processes and the lines
+# containing the bash word, thus allowing you to easily get the PID of your Bash process.
+
+ps aux | grep bash
