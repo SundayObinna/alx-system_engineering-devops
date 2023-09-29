@@ -2,4 +2,4 @@
 # Write a Bash script that displays the PID, along with the
 # process name, of processes whose name contain the word bash.
 
-ps aux | grep -E 'bash' | grep -v 'grep' | awk '{print $2, $11}'
+pgrep bash -l
