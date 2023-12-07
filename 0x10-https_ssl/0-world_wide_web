@@ -1,0 +1,41 @@
+#!/bin/bash
+
+audit_subdomain() {
+  local domain=$1
+  local subdomain=$2
+  local record_type=$(dig +short -t CNAME $subdomain.$domain | awk '{print $1}')
+
+  if [ -z "$record_type" ]; then
+    record_type="A"
+  fi
+
+  local destination=$(dig +short $subdomain.$domain | awk '{print $1}')
+  echo "The subdomain $subdomain is a $record_type record and points to $destination"
+}
+
+audit_domain() {
+  local domain=$1
+  audit_subdomain $domain "www"
+  audit_subdomain $domain "lb-01"
+  audit_subdomain $domain "web-01"
+  audit_subdomain $domain "web-02"
+}
+
+main() {
+  local domain=$1
+  local subdomain=$2
+
+  if [ -z "$subdomain" ]; then
+    audit_domain $domain
+  else
+    audit_subdomain $domain $subdomain
+  fi
+}
+
+# Check if both domain and subdomain are provided
+if [ "$#" -eq 2 ]; then
+  main "$1" "$2"
+else
+  echo "Usage: $0 <domain> <subdomain>"
+fi
+
