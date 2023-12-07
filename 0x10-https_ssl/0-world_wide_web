@@ -1,41 +1,19 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Usage: ./1-world_wide_web <domain> <subdomain>
+# Display information about subdomains.
 
-audit_subdomain() {
-  local domain=$1
-  local subdomain=$2
-  local record_type=$(dig +short -t CNAME $subdomain.$domain | awk '{print $1}')
-
-  if [ -z "$record_type" ]; then
-    record_type="A"
-  fi
-
-  local destination=$(dig +short $subdomain.$domain | awk '{print $1}')
-  echo "The subdomain $subdomain is a $record_type record and points to $destination"
+audit_subdomain () {
+    line=$(dig "$2"."$1" | grep -A1 'ANSWER SECTION:' | tr '\t' '\n' | tail -2 | tr '\n' ' ')
+    echo "$2 $line" | awk '{print "The subdomain " $1 " is a " $2 " record and points to " $3}'
 }
 
-audit_domain() {
-  local domain=$1
-  audit_subdomain $domain "www"
-  audit_subdomain $domain "lb-01"
-  audit_subdomain $domain "web-01"
-  audit_subdomain $domain "web-02"
-}
-
-main() {
-  local domain=$1
-  local subdomain=$2
-
-  if [ -z "$subdomain" ]; then
-    audit_domain $domain
-  else
-    audit_subdomain $domain $subdomain
-  fi
-}
-
-# Check if both domain and subdomain are provided
-if [ "$#" -eq 2 ]; then
-  main "$1" "$2"
-else
-  echo "Usage: $0 <domain> <subdomain>"
+if [ "$#" == 1 ]
+then
+  audit_subdomain "$1" "www"
+  audit_subdomain "$1" "lb-01"
+  audit_subdomain "$1" "web-01"
+  audit_subdomain "$1" "web-02"
+elif [ "$#" == 2 ]
+then
+  audit_subdomain "$1" "$2"
 fi
-
